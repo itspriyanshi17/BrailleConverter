@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Braille Converter</title>
+  <meta name="description" content="Take a photo of any page and see it in Braille.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 30'><circle cx='5' cy='5' r='4'/><circle cx='15' cy='5' r='4'/><circle cx='5' cy='15' r='4'/><circle cx='15' cy='25' r='4'/></svg>">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <h1><span class="logo" aria-hidden="true">⠃</span> Braille Converter</h1>
+      <p class="tagline">Take a photo of a page, or type text, and see it in Braille.</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- 1. Input -->
+    <section class="card" aria-labelledby="input-title">
+      <h2 id="input-title"><span class="step">1</span> Add text</h2>
+
+      <div class="tabs" role="tablist">
+        <button role="tab" id="tab-photo" aria-selected="true" aria-controls="panel-photo">Photo</button>
+        <button role="tab" id="tab-type" aria-selected="false" aria-controls="panel-type">Type text</button>
+      </div>
+
+      <div id="panel-photo" role="tabpanel" aria-labelledby="tab-photo">
+        <label class="field">
+          <span>Language on the page</span>
+          <select id="lang">
+            {% for code, name in languages %}
+            <option value="{{ code }}">{{ name }}</option>
+            {% endfor %}
+          </select>
+        </label>
+
+        <div class="photo-buttons">
+          <label class="btn primary">
+            <input type="file" id="camera" accept="image/*" capture="environment" hidden>
+            📷 Take photo
+          </label>
+          <label class="btn">
+            <input type="file" id="upload" accept="image/*" hidden>
+            🖼️ Upload image
+          </label>
+        </div>
+
+        <figure id="preview" class="preview" hidden>
+          <img id="preview-img" alt="The photo you chose">
+        </figure>
+        <p id="ocr-status" class="status" role="status" aria-live="polite"></p>
+      </div>
+
+      <div id="panel-type" role="tabpanel" aria-labelledby="tab-type" hidden>
+        <p class="hint">Type or paste text in the box below. English, Hindi and other Indian languages are supported.</p>
+      </div>
+    </section>
+
+    <!-- 2. Text (editable) -->
+    <section class="card" aria-labelledby="text-title">
+      <h2 id="text-title"><span class="step">2</span> Check the text</h2>
+      <p class="hint">Text read from a photo can have mistakes. Fix them here and the Braille updates as you type.</p>
+      <textarea id="text" rows="6" placeholder="Text from the photo appears here — or type, e.g. Hello नमस्ते"></textarea>
+      <p id="text-meta" class="meta"></p>
+    </section>
+
+    <!-- 3. Braille -->
+    <section class="card" aria-labelledby="out-title" id="output" hidden>
+      <div class="out-head">
+        <h2 id="out-title"><span class="step">3</span> Braille</h2>
+        <div class="downloads">
+          <button class="btn small" id="copy">Copy</button>
+          <button class="btn small" id="dl-txt">.txt</button>
+          <button class="btn small" id="dl-brf" title="Braille Ready Format, for embossers">.brf</button>
+          <button class="btn small" id="dl-png">.png</button>
+        </div>
+      </div>
+
+      <p id="braille" class="braille-text" lang="und-Brai"></p>
+      <p id="unknown" class="warn" hidden></p>
+
+      <h3>Dot cells</h3>
+      <p class="hint">Each cell has six dots (●&nbsp;raised, ○&nbsp;flat). The letter it stands for is underneath.</p>
+      <div id="cells" class="cells"></div>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    English: Unified English Braille Grade 1 · Indian languages: Bharati Braille
+  </footer>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
